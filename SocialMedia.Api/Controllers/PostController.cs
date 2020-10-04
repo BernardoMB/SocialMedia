@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using SocialMedia.Core.Entities;
 using SocialMedia.Core.Interfaces;
 using SocialMedia.Infrastructure.Repositories;
 using System.Threading.Tasks;
@@ -10,7 +11,7 @@ namespace SocialMedia.Api.Controllers
      */
     // We do not need to change the [controller] segment of this API route path. It will automatically pick up the first part of the class name, in this case it would be 'post'
     [Route("api/[controller]")]
-    [ApiController]
+    [ApiController] // This a class decorator
     public class PostController : ControllerBase
     {
         // Working with the abstraction of the repository instead of working with the actual implementation
@@ -35,6 +36,25 @@ namespace SocialMedia.Api.Controllers
 
             // Ok for returning 200 status
             return Ok(posts);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetPost(int id)
+        {
+            // We should not use the keyword new. Instead we should use dependency injection.
+            // var posts = new PostRepository().GetPosts();
+            // Instead we should use the dependency injection pattern
+            var post = await _postRepository.GetPost(id);
+
+            // Ok for returning 200 status
+            return Ok(post);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> InsertPost(Post post)
+        {
+            await _postRepository.InsertPost(post);
+            return Ok(post);
         }
     }
 }

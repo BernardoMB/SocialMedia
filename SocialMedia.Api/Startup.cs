@@ -18,10 +18,10 @@ using SocialMedia.Infrastructure.Repositories;
 /**
  * This class is the most important class of the project.
  * Here we will register all tecnologies or services that we will be using in this project:
- * Database connection
- * Authentication
- * Dependency injection
- * Etc
+ * * Database connection
+ * * Authentication
+ * * Dependency injection
+ * * Etc
  */
 
 namespace SocialMedia.Api
@@ -43,10 +43,9 @@ namespace SocialMedia.Api
             // Database configuration
             services.AddDbContext<SocialMediaContext>(options => options.UseSqlServer(Configuration.GetConnectionString("SocialMedia")));
 
-            // Resolve dependencies
+            // Define which implementation of the interface (abstraction) IPostRepository to use.
+            // We will resolve an instance of the implementation of PostRpository.
             services.AddTransient<IPostRepository, PostRepository>();
-            // With this, we are telling the program that everytime we use the IPostRepository interface (an abstraction), we will resolve an instance of the implementation of PostRpository
-
             // In case we want to change from database provider we would need to work with a different implementation, then we should resolve the other implementation
             //services.AddTransient<IPostRepository, PostMongoRepository>();
         }

@@ -19,12 +19,12 @@ namespace SocialMedia.Infrastructure.Repositories
             _context = context;
         }
 
-        public async Task<IEnumerable<Publicacion>> GetPosts()
+        public async Task<IEnumerable<Post>> GetPosts()
         {
             // Simulate database connection
 
             // Generate fake data
-            //var posts = Enumerable.Range(1, 10).Select(x => new Post { 
+            //var posts = Enumerable.Range(1, 10).Select(x => new Posts { 
             //    PostId = x,
             //    Description = $"Description {x}",
             //    Date = DateTime.Now,
@@ -33,10 +33,10 @@ namespace SocialMedia.Infrastructure.Repositories
             //});
 
             // Alternatively
-            //List<Post> posts2 = new List<Post>();
+            //List<Posts> posts2 = new List<Posts>();
             //foreach (int i in Enumerable.Range(1, 10))
             //{
-            //    Post post = new Post() 
+            //    Posts post = new Posts() 
             //    {
             //        PostId = i,
             //        Description = $"Description {i}",
@@ -48,13 +48,28 @@ namespace SocialMedia.Infrastructure.Repositories
             //};
 
             // Use a real connection to the database instead
-            var posts = await _context.Publicacion.ToListAsync();
+            var posts = await _context.Posts.ToListAsync();
 
             // Await asynchronous task
             await Task.Delay(10);
 
             // Return fake data
             return posts;
+        }
+
+        public async Task<Post> GetPost(int id)
+        {
+            // Use a real connection to the database
+            var post = await _context.Posts.FirstOrDefaultAsync(x => x.PostId == id);
+
+            // Return fake data
+            return post;
+        }
+
+        public async Task InsertPost(Post post)
+        {
+            _context.Posts.Add(post);
+            await _context.SaveChangesAsync();
         }
     }
 }

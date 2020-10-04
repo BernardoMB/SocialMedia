@@ -10,6 +10,8 @@ namespace SocialMedia.Core.Interfaces
     // This interface is the abstraction of the actual repository
     public interface IPostRepository
     {
-        Task<IEnumerable<Publicacion>> GetPosts();
+        Task<IEnumerable<Post>> GetPosts();
+        Task<Post> GetPost(int id);
+        Task InsertPost(Post post);
     }
 }
