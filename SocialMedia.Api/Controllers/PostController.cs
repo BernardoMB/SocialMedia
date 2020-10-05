@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using SocialMedia.Api.Responses;
 using SocialMedia.Core.DTOs;
 using SocialMedia.Core.Entities;
 using SocialMedia.Core.Interfaces;
@@ -78,9 +79,12 @@ namespace SocialMedia.Api.Controllers
             // Alternatively use automapper library for automatically map entity properties.
             var postsDto = _mapper.Map<IEnumerable<PostDto>>(posts);
 
+            // (8) Return an object of type ApiResponse for better coding practices.
+            var response = new ApiResponse<IEnumerable<PostDto>>(postsDto);
+
             // Return the dto instead of out domain entity.
             // Ok for returning 200 status.
-            return Ok(postsDto);
+            return Ok(response);
         }
 
         [HttpGet("{id}")]
@@ -114,8 +118,11 @@ namespace SocialMedia.Api.Controllers
             // Alternatively 
             var postDto = _mapper.Map<PostDto>(post);
 
+            // (8) Return an object of type ApiResponse for better coding practices.
+            var response = new ApiResponse<PostDto>(postDto);
+
             // Ok for returning 200 status
-            return Ok(postDto);
+            return Ok(response);
         }
 
         [HttpPost]
@@ -148,8 +155,17 @@ namespace SocialMedia.Api.Controllers
             // With the previous statement the application is now protected agains overposting.
             // If the requests postDto contains the user, this endpoit will only use the variables we are mapping in the previous statement.
             await _postRepository.InsertPost(post);
-            // Serialization: convert a C# Class to a JSON object
-            return Ok(post);
+            // Serialization: convert a C# Class to a JSON object.
+
+            // Map again so no domain entity is returned. Return the mapped post instead.
+            postDto = _mapper.Map<PostDto>(post);
+
+            // (8) Return an object of type ApiResponse for better coding practices.
+            // Note that the class ApiResponse is a generic class.
+            // Note that here in the response we have the post with the created id.
+            var response = new ApiResponse<PostDto>(postDto);
+
+            return Ok(response);
         }
 
         [HttpPut("{id}")]
@@ -158,14 +174,16 @@ namespace SocialMedia.Api.Controllers
             var post = _mapper.Map<Post>(postDto);
             post.PostId = id;
             var result = await _postRepository.UpdatePost(post);
-            return Ok(result);
+            var response = new ApiResponse<bool>(result);
+            return Ok(response);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePost(int id)
         {
             var result = await _postRepository.DeletePost(id);
-            return Ok(result);
+            var response = new ApiResponse<bool>(result);
+            return Ok(response);
         }
     }
 }
