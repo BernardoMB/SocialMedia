@@ -1,4 +1,5 @@
-﻿using SocialMedia.Core.Entities;
+﻿using SocialMedia.Core.DTOs;
+using SocialMedia.Core.Entities;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -13,5 +14,7 @@ namespace SocialMedia.Core.Interfaces
         Task<IEnumerable<Post>> GetPosts();
         Task<Post> GetPost(int id);
         Task InsertPost(Post post);
+        Task<bool> UpdatePost(Post post);
+        Task<bool> DeletePost(int id);
     }
 }

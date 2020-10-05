@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SocialMedia.Core.DTOs;
 using SocialMedia.Core.Entities;
 using SocialMedia.Core.Interfaces;
 using SocialMedia.Infrastructure.Data;
@@ -70,6 +71,26 @@ namespace SocialMedia.Infrastructure.Repositories
         {
             _context.Posts.Add(post);
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<bool> UpdatePost(Post post)
+        {
+            var currentPost = await GetPost(post.PostId);
+            currentPost.Date = post.Date;
+            currentPost.Description = post.Description;
+            currentPost.Image = post.Image;
+
+            int rowsAffected = await _context.SaveChangesAsync();
+            return rowsAffected > 0;
+        }
+
+        public async Task<bool> DeletePost(int id)
+        {
+            var currentPost = await GetPost(id);
+            //_context.Posts.RemoveRange(); // Use RemoveRange() to delete several posts at the same time.
+            _context.Posts.Remove(currentPost);
+            int rowsAffected = await _context.SaveChangesAsync();
+            return rowsAffected > 0;
         }
     }
 }

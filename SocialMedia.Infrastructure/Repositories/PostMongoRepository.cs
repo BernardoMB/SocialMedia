@@ -1,4 +1,5 @@
-﻿using SocialMedia.Core.Entities;
+﻿using SocialMedia.Core.DTOs;
+using SocialMedia.Core.Entities;
 using SocialMedia.Core.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -30,6 +31,7 @@ namespace SocialMedia.Infrastructure.Repositories
             List<Post> posts = new List<Post>();
             foreach (int i in Enumerable.Range(1, 10))
             {
+                Console.WriteLine(i);
                 Post post = new Post()
                 {
                 };
@@ -61,6 +63,7 @@ namespace SocialMedia.Infrastructure.Repositories
             List<Post> posts = new List<Post>();
             foreach (int i in Enumerable.Range(1, 10))
             {
+                Console.WriteLine(i);
                 Post post = new Post()
                 {
                 };
@@ -75,6 +78,18 @@ namespace SocialMedia.Infrastructure.Repositories
         }
         public Task InsertPost(Post post)
         {
+            throw new NotImplementedException();
+        }
+
+        public async Task<bool> UpdatePost(Post post)
+        {
+            await Task.Delay(10);
+            throw new NotImplementedException();
+        }
+
+        public async Task<bool> DeletePost(int id)
+        {
+            await Task.Delay(10);
             throw new NotImplementedException();
         }
     }
