@@ -14,6 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using SocialMedia.Core.Interfaces;
+using SocialMedia.Core.Services;
 using SocialMedia.Infrastructure.Data;
 using SocialMedia.Infrastructure.Filters;
 using SocialMedia.Infrastructure.Repositories;
@@ -66,6 +67,9 @@ namespace SocialMedia.Api
 
             // Database configuration
             services.AddDbContext<SocialMediaContext>(options => options.UseSqlServer(Configuration.GetConnectionString("SocialMedia")));
+
+            // (9) Register which implementation to resolve when injectin the post service.
+            services.AddTransient<IPostService, PostService>();
 
             // Define which implementation of the interface (abstraction) IPostRepository to use.
             // We will resolve an instance of the implementation of PostRpository.

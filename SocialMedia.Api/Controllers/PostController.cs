@@ -4,6 +4,7 @@ using SocialMedia.Api.Responses;
 using SocialMedia.Core.DTOs;
 using SocialMedia.Core.Entities;
 using SocialMedia.Core.Interfaces;
+using SocialMedia.Core.Services;
 using SocialMedia.Infrastructure.Repositories;
 using System.Collections;
 using System.Collections.Generic;
@@ -31,17 +32,27 @@ namespace SocialMedia.Api.Controllers
      */
     public class PostController : ControllerBase
     {
-        // Working with the abstraction of the repository instead of working with the actual implementation
-        private readonly IPostRepository _postRepository;
+        // Working with the abstraction of the repository instead of working with the actual implementation.
+        //private readonly IPostRepository _postRepository;
+        // (9) Alternatively
+        // (9) Instead of injecting the repository, we should inject the service.
+        private readonly IPostService _postService;
+
         // Use automapper
         private readonly IMapper _mapper;
 
         // Dependency injection via class contructor
-        public PostController(IPostRepository postRepository, IMapper mapper)
-        {
-            // The post repository this class is going to use id the one passed to the contructor.
+        public PostController(
+            IPostRepository postRepository,
+            IPostService postService,
+            IMapper mapper
+        ) {
+            // The post repository implementation that this controller is going to use is the one passed to this constructor.
             // Si no hacemos esta inyeccion de dependencia, entonces esta clase se esta acoplando a una implementacion en concreto, es mejor hacerlo con dependency injection
-            _postRepository = postRepository;
+            //_postRepository = postRepository;
+            // (9) Alternatively
+            // (9) Use the repository service instead of directly using the repository.
+            _postService = postService;
 
             // Inject automapper dependency
             _mapper = mapper;
@@ -65,7 +76,9 @@ namespace SocialMedia.Api.Controllers
             // var posts = new PostRepository().GetPosts();
             // We should not use the keyword new. Instead we should use dependency injection.
             // Instead we should use the dependency injection pattern
-            var posts = await _postRepository.GetPosts();
+            //var posts = await _postRepository.GetPosts();
+            // (9) Alternatively call the service instead of calling the repository directly
+            var posts = await _postService.GetPosts();
 
             // Map from the posts domain entities to dtos
             //var postsDto = posts.Select(x => new PostDto()
@@ -77,6 +90,7 @@ namespace SocialMedia.Api.Controllers
             //    UserId = x.UserId
             //});
             // Alternatively use automapper library for automatically map entity properties.
+            // var postsDto = _mapper.Map<IEnumerable<PostDto>>(posts);
             var postsDto = _mapper.Map<IEnumerable<PostDto>>(posts);
 
             // (8) Return an object of type ApiResponse for better coding practices.
@@ -104,7 +118,9 @@ namespace SocialMedia.Api.Controllers
             // var posts = new PostRepository().GetPosts();
             // We should not use the keyword new. Instead we should use dependency injection.
             // Instead we should use the dependency injection pattern:
-            var post = await _postRepository.GetPost(id);
+            //var post = await _postRepository.GetPost(id);
+            // (9) Alternatively call the service instead of calling the repository directly
+            var post = await _postService.GetPost(id);
 
             // Mappings
             //var postDto = new PostDto()
@@ -152,10 +168,13 @@ namespace SocialMedia.Api.Controllers
             // Alternatively
             var post = _mapper.Map<Post>(postDto);
 
+
             // With the previous statement the application is now protected agains overposting.
             // If the requests postDto contains the user, this endpoit will only use the variables we are mapping in the previous statement.
-            await _postRepository.InsertPost(post);
+            //await _postRepository.InsertPost(post);
             // Serialization: convert a C# Class to a JSON object.
+            // (9) Alternatively call the service instead of calling the repository directly
+            await _postService.InsertPost(post);
 
             // Map again so no domain entity is returned. Return the mapped post instead.
             postDto = _mapper.Map<PostDto>(post);
@@ -173,7 +192,7 @@ namespace SocialMedia.Api.Controllers
         {
             var post = _mapper.Map<Post>(postDto);
             post.PostId = id;
-            var result = await _postRepository.UpdatePost(post);
+            var result = await _postService.UpdatePost(post);
             var response = new ApiResponse<bool>(result);
             return Ok(response);
         }
@@ -181,7 +200,7 @@ namespace SocialMedia.Api.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePost(int id)
         {
-            var result = await _postRepository.DeletePost(id);
+            var result = await _postService.DeletePost(id);
             var response = new ApiResponse<bool>(result);
             return Ok(response);
         }

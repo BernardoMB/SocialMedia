@@ -52,7 +52,7 @@ namespace SocialMedia.Infrastructure.Repositories
             var posts = await _context.Posts.ToListAsync();
 
             // Await asynchronous task
-            await Task.Delay(10);
+            //await Task.Delay(10);
 
             // Return fake data
             return posts;
