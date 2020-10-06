@@ -1,5 +1,6 @@
 ﻿using SocialMedia.Core.Entities;
 using SocialMedia.Core.Interfaces;
+using SocialMedia.Infrastructure.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -14,10 +15,14 @@ namespace SocialMedia.Core.Services
     {
         // (9) Always use dependency injection in services.
         private readonly IPostRepository _postRepository;
+        private readonly IUserRepository _userRepository;
 
-        public PostService(IPostRepository postRepository)
-        {
+        public PostService(
+            IPostRepository postRepository,
+            IUserRepository userRepository
+        ) {
             _postRepository = postRepository;
+            _userRepository = userRepository;
         }
         
         public async Task<IEnumerable<Post>> GetPosts()
@@ -32,6 +37,18 @@ namespace SocialMedia.Core.Services
 
         public async Task InsertPost(Post post)
         {
+            // Here we need to verify that the user that is trying to create a post exists.
+            var user = await _userRepository.GetUser(post.UserId);
+            // Note that it is not the responsability of this class to validate that the UserId is not null.
+            if (user == null)
+            {
+                // Generate domain exception
+                throw new Exception("User doesn't exists");
+            }
+            if (post.Description.ToLower().Contains("sexo"))
+            {
+                throw new Exception("Content not allowed");
+            }
             await _postRepository.InsertPost(post);
         }
         

@@ -76,6 +76,7 @@ namespace SocialMedia.Api
             services.AddTransient<IPostRepository, PostRepository>();
             // In case we want to change from database provider we would need to work with a different implementation, then we should resolve the other implementation
             //services.AddTransient<IPostRepository, PostMongoRepository>();
+            services.AddTransient<IUserRepository, UserRepository>();
 
             // Add MVC compatibility for using global action filters (this application is not an MVC application, it is just an API).
             // Global actions filters are code that gets executed before and after the code that resides inside every controller.
