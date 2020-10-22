@@ -19,39 +19,47 @@ namespace SocialMedia.Api.Controllers
      * It will automatically pick up the first part of the class name, in this case it would be 'post'.
      */
     [Route("api/[controller]")]
-    /**
+    /** (7)
      * Decorate the class with ApiController decorator for using the following features:
      * * Automatically return appropiate status codes (Ej. Returning 404 when resource is not found).
-     * * Automatically validate requests dtos using decorators inside the dto classes.
+     * * Automatically validate requests DTOs using data anotations (decorators) inside the dto classes.
      */
     [ApiController]
-    /**
+    /** (7)
      * This controller is extending the ControllerBase class. It can extend the Controller class instead of ControllerBase class.
-     * Useing ControllerBase vs. Controller class. ControllerBase is specially designed to work with an API.
+     * Using ControllerBase vs. Controller class: ControllerBase is specially designed to work with an API.
      * Controller aditionaly add features for working with MVC which includes the views. Extending from Controller is for working with views.
+     * We will not be using the MVC pattern because we will not be using views, therefore this controller class will not extend the Controller class.
      */
     public class PostController : ControllerBase
     {
-        // Working with the abstraction of the repository instead of working with the actual implementation.
+        // One must work with the abstraction (interface) of the repository instead of working with the actual implementation.
+        // And that is why this class is declaring a property of type interface.
         //private readonly IPostRepository _postRepository;
-        // (9) Alternatively
-        // (9) Instead of injecting the repository, we should inject the service.
+        // (9) Alternatively, instead of injecting the repository, we should inject the service.
         private readonly IPostService _postService;
 
         // Use automapper
         private readonly IMapper _mapper;
 
-        // Dependency injection via class contructor
+        /*
+         * The following mwthod is the class constructor.
+         * The technique of declaring a property of type interface inside this class and then passing the constructor
+         * an object of type interface is called dependency injection.
+         */
         public PostController(
-            IPostRepository postRepository,
+            //IRepository<Post> postRepository, 
+            // (9) Alternatively, instead of injecting the repository, we should inject the service.
             IPostService postService,
+            // Inject the mapper service
             IMapper mapper
         ) {
             // The post repository implementation that this controller is going to use is the one passed to this constructor.
-            // Si no hacemos esta inyeccion de dependencia, entonces esta clase se esta acoplando a una implementacion en concreto, es mejor hacerlo con dependency injection
+            // Si no hacemos esta inyeccion de dependencia, entonces esta clase se esta acoplando a una implementacion en concreto, es mejor hacerlo con inyeccion de dependencias.
+            // We use dependency injection to avoid working with actual class implementations.
+            // The service.AddTrascient call inside the ConfigureServices method inside the Startup.cs class is determining which implementation of the interface this class will use.
             //_postRepository = postRepository;
-            // (9) Alternatively
-            // (9) Use the repository service instead of directly using the repository.
+            // (9) Alternatively, instead of injecting the repository, we should inject the service.
             _postService = postService;
 
             // Inject automapper dependency
@@ -71,7 +79,10 @@ namespace SocialMedia.Api.Controllers
                 return BadRequest();
             }
             // (7) This previous code is not actually required thanks to the decorator ApiController 
-            // because it automatically validated the model state based on the decorator sinside the dto classes.
+            // because it automatically validated the model state based on the property decorators inside the dto classes.
+            // (8) This previous code is not actually required. Thanks to the ApiController decorator global action filters
+            // are triggered. This application implements a custom validation action filter, so automatic validation is handled automatically
+            // by the Fluent API validation filter, therefore no manual validation is needed here.
 
             // var posts = new PostRepository().GetPosts();
             // We should not use the keyword new. Instead we should use dependency injection.
@@ -191,7 +202,7 @@ namespace SocialMedia.Api.Controllers
         public async Task<IActionResult> PutPost(int id, PostDto postDto)
         {
             var post = _mapper.Map<Post>(postDto);
-            post.PostId = id;
+            post.Id = id;
             var result = await _postService.UpdatePost(post);
             var response = new ApiResponse<bool>(result);
             return Ok(response);

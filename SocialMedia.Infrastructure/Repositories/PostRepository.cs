@@ -11,16 +11,23 @@ using System.Threading.Tasks;
 
 namespace SocialMedia.Infrastructure.Repositories
 {
-    public class PostRepository : IPostRepository
+    public class PostRepository : IRepository<Post>
     {
         private readonly SocialMediaContext _context;
-        // Also use dependency injectionto inject the database context
+
+        // Also use dependency injection to inject the database context.
         public PostRepository(SocialMediaContext context)
         {
             _context = context;
         }
 
-        public async Task<IEnumerable<Post>> GetPosts()
+        public async Task Add(Post post)
+        {
+            _context.Posts.Add(post);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<IEnumerable<Post>> GetAll()
         {
             // Simulate database connection
 
@@ -58,24 +65,18 @@ namespace SocialMedia.Infrastructure.Repositories
             return posts;
         }
 
-        public async Task<Post> GetPost(int id)
+        public async Task<Post> GetById(int id)
         {
             // Use a real connection to the database
-            var post = await _context.Posts.FirstOrDefaultAsync(x => x.PostId == id);
+            var post = await _context.Posts.FirstOrDefaultAsync(x => x.Id == id);
 
             // Return fake data
             return post;
         }
 
-        public async Task InsertPost(Post post)
+        public async Task<bool> Update(Post post)
         {
-            _context.Posts.Add(post);
-            await _context.SaveChangesAsync();
-        }
-
-        public async Task<bool> UpdatePost(Post post)
-        {
-            var currentPost = await GetPost(post.PostId);
+            var currentPost = await GetById(post.Id);
             currentPost.Date = post.Date;
             currentPost.Description = post.Description;
             currentPost.Image = post.Image;
@@ -84,9 +85,9 @@ namespace SocialMedia.Infrastructure.Repositories
             return rowsAffected > 0;
         }
 
-        public async Task<bool> DeletePost(int id)
+        public async Task<bool> Delete(int id)
         {
-            var currentPost = await GetPost(id);
+            var currentPost = await GetById(id);
             //_context.Posts.RemoveRange(); // Use RemoveRange() to delete several posts at the same time.
             _context.Posts.Remove(currentPost);
             int rowsAffected = await _context.SaveChangesAsync();

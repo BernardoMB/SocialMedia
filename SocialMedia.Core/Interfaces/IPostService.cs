@@ -4,6 +4,9 @@ using System.Threading.Tasks;
 
 namespace SocialMedia.Core.Services
 {
+    /**
+     * If we want to use depedency injection we must implement abstractions of classes or interfaces.
+     */
     public interface IPostService
     {
         Task<IEnumerable<Post>> GetPosts();

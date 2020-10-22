@@ -21,11 +21,11 @@ namespace SocialMedia.Infrastructure.Data.Configurations
 
             // KEYS
 
-            builder.HasKey(e => e.CommentId);
+            builder.HasKey(e => e.Id);
 
             // PROPERTIES
 
-            builder.Property(e => e.CommentId)
+            builder.Property(e => e.Id)
                 .HasColumnName("IdComentario") // Properties are also mapped with different names
                 .ValueGeneratedNever();
 

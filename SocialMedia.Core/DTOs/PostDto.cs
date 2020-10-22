@@ -11,9 +11,10 @@ namespace SocialMedia.Core.DTOs
      */
     public class PostDto
     {
-        // Decorators are very usefull but dto classes should be simpler classes with logic or decorators.
+        // Decorators are very usefull but dto classes should be simpler classes with no logic or decorators.
+        // Instead o using decorators for model validation, it is better to use a custom validator
 
-        public int PostId { get; set; }
+        public int Id { get; set; }
         public int UserId { get; set; }
         public DateTime Date { get; set; }
         //[Required] // Don't like to use decorators for validations. Instead register custom validatos in Startup.cs.

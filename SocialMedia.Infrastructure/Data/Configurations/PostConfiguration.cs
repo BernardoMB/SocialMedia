@@ -16,11 +16,11 @@ namespace SocialMedia.Infrastructure.Data.Configurations
 
             // KEYS
 
-            builder.HasKey(e => e.PostId);
+            builder.HasKey(e => e.Id);
 
             // PROPERTIES
 
-            builder.Property(e => e.PostId)
+            builder.Property(e => e.Id)
                 .HasColumnName("IdPublicacion");
 
             builder.Property(e => e.UserId)

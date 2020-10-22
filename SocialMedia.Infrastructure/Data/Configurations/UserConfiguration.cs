@@ -15,11 +15,11 @@ namespace SocialMedia.Infrastructure.Data.Configurations
 
             // KEYS
 
-            builder.HasKey(e => e.UserId);
+            builder.HasKey(e => e.Id);
 
             // PROPERTIES
 
-            builder.Property(e => e.UserId)
+            builder.Property(e => e.Id)
                 .HasColumnName("IdUsuario");
 
             builder.Property(e => e.FirstName)
