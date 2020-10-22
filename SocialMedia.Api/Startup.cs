@@ -30,6 +30,7 @@ using SocialMedia.Infrastructure.Repositories;
  * (8) CRUD Operations with EF Core
  * (9) Business Logic and Respository Pattern
  * (10) Generic Repository and Unit of Work
+ * (11) Custom Exceptions
  */
 
 /**

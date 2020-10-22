@@ -14,22 +14,36 @@ namespace SocialMedia.Core.Services
         // (9) Always use dependency injection in services.
         //private readonly IPostRepository _postRepository;
         //private readonly IUserRepository _userRepository;
-        // (10) Better use the generic class:
+        // (9) The application will know which implementation to use for these abstractions because they are registered in the Startup.cs class.
+
+        // (10) Better use the generic repository:
         //private readonly IRepository<Post> _postRepository;
         //private readonly IRepository<User> _userRepository;
         //private readonly IRepository<Comment> _commentRepository;
-        // (10) Better use unit of wotk. This will sace us time. _unitOfWork will be able to call any method inside any repository implementation.
+        // (10) Note that BaseRepository is a generic class and it is the implementation to use for these abstractions (objects of type IRepository).
+
+        // (10) Better use unit of wotk: 
+        // (10) This will save us time. _unitOfWork will be able to call any method inside any repository implementation.
         private readonly IUnitOfWork _unitOfWork;
+        // (10) The implementation to use for this abstraction is registered in the Startup.cs file.
 
         public PostService(
+            // (9) Always use dependency injection in services.
             //IPostRepository postRepository,
             //IUserRepository userRepository
-            // (10) Better use the generic class:
-            //IRepository<Post> postRepository,
+            // (9) The application will know which implementation to use for these abstractions because they are registered in the Startup.cs class.
+
+            // (10) Better use the generic repository:
+            //IRepository<Post> postRepository, // This will use the implementation 
             //IRepository<User> userRepository
+            // (10) Note that BaseRepository is a generic class and it is the implementation to use for these abstractions (objects of type IRepository).
+
             // (10) Better use unit of work
+            // (10) This will save us time. _unitOfWork will be able to call any method inside any repository implementation.
             IUnitOfWork unitOfWork
-        ) {
+            // (10) The implementation to use for this abstraction is registered in the Startup.cs file.
+        )
+        {
             //_postRepository = postRepository;
             //_userRepository = userRepository;
             // (10) Better use unit of work

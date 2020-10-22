@@ -9,8 +9,15 @@ using System.Threading.Tasks;
 
 namespace SocialMedia.Infrastructure.Repositories
 {
+    /* (10)
+     * This class is a genercic class and it is an implementation of the IRepository abstraction.
+     * One can use this generic class or other implementation. 
+     */
     public class BaseRepository<T> : IRepository<T> where T : BaseEntity
     {
+        // (10) Her the keyword where T : BaseEntity is setting a restriction:
+        // (10) Only classes that extend from BaseEntity can be used to instanciate an object of type BaseRepository.
+
         private readonly SocialMediaContext _context;
         private readonly DbSet<T> _entities;
 
@@ -21,7 +28,7 @@ namespace SocialMedia.Infrastructure.Repositories
 
         public async Task Add(T entity)
         {
-            _entities.Add(entity);
+            _entities.Add(entity); // Compare how this is done in the PostRepository
             await _context.SaveChangesAsync();
         }
 
