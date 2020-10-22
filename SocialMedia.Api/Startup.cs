@@ -69,7 +69,12 @@ namespace SocialMedia.Api
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             // Configure NewtonSoftJson package.
-            services.AddControllers().AddNewtonsoftJson(options =>
+            services.AddControllers(
+            // (11) Register exception filters
+            options =>
+            {
+                options.Filters.Add<GlobalExceptionFilter>();
+            }).AddNewtonsoftJson(options =>
             {
                 // Ignore circular reference error.
                 options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;

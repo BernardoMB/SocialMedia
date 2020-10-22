@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <Compile Remove="Repositories\PostMongoRepository.cs" />
-    <Compile Remove="Repositories\PostRepository.cs" />
     <Compile Remove="Repositories\UserRepository.cs" />
   </ItemGroup>
 

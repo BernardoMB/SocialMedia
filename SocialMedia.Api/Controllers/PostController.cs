@@ -68,7 +68,7 @@ namespace SocialMedia.Api.Controllers
 
         // HttpGet decorator for telling the controller that the method GetPosts is the function to be called when invoking the the GET api/controller route
         [HttpGet]
-        public async Task<IActionResult> GetPosts()
+        public IActionResult GetPosts()
         {
             // (7) Because this method is declared in a class that extends from the ControllerBase,
             // we are able to access the ModelState property:
@@ -76,7 +76,7 @@ namespace SocialMedia.Api.Controllers
             {
                 // The BasRequest method is decalred in the ControllerBase class which is the class this 
                 // class is extending from.
-                return BadRequest();
+                // return BadRequest();
             }
             // (7) This previous code is not actually required thanks to the decorator ApiController 
             // because it automatically validated the model state based on the property decorators inside the dto classes.
@@ -89,7 +89,7 @@ namespace SocialMedia.Api.Controllers
             // Instead we should use the dependency injection pattern
             //var posts = await _postRepository.GetPosts();
             // (9) Alternatively call the service instead of calling the repository directly
-            var posts = await _postService.GetPosts();
+            var posts = _postService.GetPosts();
 
             // Map from the posts domain entities to dtos
             //var postsDto = posts.Select(x => new PostDto()

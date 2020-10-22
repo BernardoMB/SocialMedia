@@ -13,10 +13,14 @@ namespace SocialMedia.Core.Interfaces
         // (10) Only classes extending from BaseEntity can be used for creating an abstraction of a repository.
 
         Task Add(T entity);
-        Task<IEnumerable<T>> GetAll();
+        // Task<IEnumerable<T>> GetAll(); // Commented out because of (11) changes.
+        // (11) Change method firm because of (11) changes.
+        IEnumerable<T> GetAll();
         Task<T> GetById(int id);
-        Task<bool> Update(T entity);
-        Task<bool> Delete(int id);
+        // Task Update(T entity); // Commented out because of (11) changes.
+        // (11) Change method firm because of (11) changes.
+        void Update(T entity);
+        Task Delete(int id);
 
     }
 }

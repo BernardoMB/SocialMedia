@@ -6,13 +6,11 @@
 
   <ItemGroup>
     <Compile Remove="Interfaces\ICommentRespository.cs" />
-    <Compile Remove="Interfaces\IPostRepository.cs" />
     <Compile Remove="Interfaces\IUserRepository.cs" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Enumerations\" />
-    <Folder Include="Exceptions\" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,7 +1,9 @@
 ﻿using SocialMedia.Core.Entities;
+using SocialMedia.Core.Exceptions;
 using SocialMedia.Core.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SocialMedia.Core.Services
@@ -58,31 +60,62 @@ namespace SocialMedia.Core.Services
             // (10) Better use the generic class:
             //var user = await _userRepository.GetById(post.UserId);
             // (10) Better use unit of work to get access to all repositories in the application
-            var user = await _unitOfWork.PostRepository.GetById(post.UserId);
+            var user = await _unitOfWork.UserRepository.GetById(post.UserId);
             // Note that it is not the responsability of this class to validate that the UserId is not null.
             if (user == null)
             {
                 // Generate domain exception
-                throw new Exception("User doesn't exists");
+                // throw new Exception("User doesn't exists");
+                // (11) The previous line was commented out because throwing exceptions this way is not 
+                // acceptable for an API because the client sending the request will see the stack
+                // trace error from .Net in the response object
+                // (11) Better show our custom business exception
+                throw new BusinessException("User doesn't exists");
+                // (11) To property pass this exception to the client making the request showing a better format. Use a custom exception filter.
+                // (11) See the Global exception filter class.
+
             }
+
+            // (11) Add validation: If user has less than 10 posts he can only post once a week.
+            var userPosts = await _unitOfWork.PostRepository.GetPostsByUser(user.Id);
+            if (userPosts.Count() < 10)
+            {
+                var lastPost = userPosts.OrderByDescending(x => x.Date).ElementAt(0);
+                // Alternativale one can use the following:
+                // var lastPost = userPosts.OrderByDescending(x => x.Date).FirstOrDefault();
+                if ((DateTime.Now - lastPost.Date).Value.TotalDays < 7)
+                {
+                    // throw new Exception("Users with less than 10 post are only allowed to post once a week");
+                    // (11) Better show our custom business exception
+                    throw new BusinessException("Users with less than 10 post are only allowed to post once a week");
+                }
+            }
+
             if (post.Description.ToLower().Contains("sexo"))
             {
-                throw new Exception("Content not allowed");
+                // throw new Exception("Content not allowed");
+                // (11) Better show our custom business exception
+                throw new BusinessException("Content not allowed");
             }
+            
             //await _postRepository.InsertPost(post);
             // (10) Better use the generic class:
             //await _postRepository.Add(post);
             // (10) Better use unit of work to get access to all repositories in the application
             await _unitOfWork.PostRepository.Add(post);
+            // (11) The save changes was deleted from the base repository. That task has to be made by the unit of work.
+            await _unitOfWork.SaveChangesAsync();
         }
 
-        public async Task<IEnumerable<Post>> GetPosts()
+        public IEnumerable<Post> GetPosts()
         {
             //return await _postRepository.GetPosts();
             // (10) Better use the generic class:
             //return await _postRepository.GetAll();
             // (10) Better use unit of work to get access to all repositories in the application
-            return await _unitOfWork.PostRepository.GetAll();
+            // return await _unitOfWork.PostRepository.GetAll();
+            // (11) Previous line call is no loger async.
+            return _unitOfWork.PostRepository.GetAll();
         }
 
         public async Task<Post> GetPost(int id)
@@ -100,7 +133,11 @@ namespace SocialMedia.Core.Services
             // (10) Better use the generic class:
             //return await _postRepository.Update(post);
             // (10) Better use unit of work to get access to all repositories in the application
-            return await _unitOfWork.PostRepository.Update(post);
+            // await _unitOfWork.PostRepository.Update(post);
+            // (11) Previous line call is no loger async.
+            _unitOfWork.PostRepository.Update(post);
+            await _unitOfWork.SaveChangesAsync();
+            return true;
         }
 
         public async Task<bool> DeletePost(int id)
@@ -109,7 +146,8 @@ namespace SocialMedia.Core.Services
             // (10) Better use the generic class:
             //return await _postRepository.Delete(id);
             // (10) Better use unit of work to get access to all repositories in the application
-            return await _unitOfWork.PostRepository.Delete(id);
+            await _unitOfWork.PostRepository.Delete(id);
+            return true;
         }
     }
 }

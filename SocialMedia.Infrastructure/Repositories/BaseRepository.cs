@@ -4,6 +4,7 @@ using SocialMedia.Core.Interfaces;
 using SocialMedia.Infrastructure.Data;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -18,8 +19,10 @@ namespace SocialMedia.Infrastructure.Repositories
         // (10) Her the keyword where T : BaseEntity is setting a restriction:
         // (10) Only classes that extend from BaseEntity can be used to instanciate an object of type BaseRepository.
 
+        // Inject the SocialMediaContext.
         private readonly SocialMediaContext _context;
-        private readonly DbSet<T> _entities;
+        // Declare the entities access as protected so it is accesible by this class and classes exteding from this class.
+        protected readonly DbSet<T> _entities;
 
         public BaseRepository(SocialMediaContext context) {
             _context = context;
@@ -28,13 +31,16 @@ namespace SocialMedia.Infrastructure.Repositories
 
         public async Task Add(T entity)
         {
-            _entities.Add(entity); // Compare how this is done in the PostRepository
-            await _context.SaveChangesAsync();
+            await _entities.AddAsync(entity); // Compare how this is done in the PostRepository
+            // await _context.SaveChangesAsync();
+            // (11) The previous line got commented out because the unit of work implementation is
+            // the one in charge of handling the transactions, therefore the UnifOfWork class is the
+            // one in charge of saving changes after every transaction.
         }
 
-        public async Task<IEnumerable<T>> GetAll()
+        public IEnumerable<T> GetAll()
         {
-            return await _entities.ToListAsync();
+            return _entities.AsEnumerable();
         }
 
         public async Task<T> GetById(int id)
@@ -42,19 +48,23 @@ namespace SocialMedia.Infrastructure.Repositories
             return await _entities.FindAsync(id);
         }
 
-        public async Task<bool> Update(T entity)
+        public void Update(T entity)
         {
             _entities.Update(entity);
-            int rowsAffected = await _context.SaveChangesAsync();
-            return rowsAffected > 0;
+            // await _context.SaveChangesAsync();
+            // (11) The previous line got commented out because the unit of work implementation is
+            // the one in charge of handling the transactions, therefore the UnifOfWork class is the
+            // one in charge of saving changes after every transaction.
         }
 
-        public async Task<bool> Delete(int id)
+        public async Task Delete(int id)
         {
             var entity = await GetById(id);
             _entities.Remove(entity);
-            int rowsAffected = await _context.SaveChangesAsync();
-            return rowsAffected > 0;
+            // await _context.SaveChanges();
+            // (11) The previous line got commented out because the unit of work implementation is
+            // the one in charge of handling the transactions, therefore the UnifOfWork class is the
+            // one in charge of saving changes after every transaction.
         }
     }
 }
