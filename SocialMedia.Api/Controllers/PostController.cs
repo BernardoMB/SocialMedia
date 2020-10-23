@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using SocialMedia.Api.Responses;
+using SocialMedia.Core.CustomEntities;
 using SocialMedia.Core.DTOs;
 using SocialMedia.Core.Entities;
 using SocialMedia.Core.Interfaces;
@@ -135,10 +137,30 @@ namespace SocialMedia.Api.Controllers
             //});
             // Alternatively use automapper library for automatically map entity properties.
             // var postsDto = _mapper.Map<IEnumerable<PostDto>>(posts);
+            // (13) Better work with pagination:
+            // var postsDto = _mapper.Map<PagedList<PostDto>>(posts);
+            // (13) Automapper is able to transform PagedList to IEnumerable, then use the same code:
             var postsDto = _mapper.Map<IEnumerable<PostDto>>(posts);
 
             // (8) Return an object of type ApiResponse for better coding practices.
+            // var response = new ApiResponse<IEnumerable<PostDto>>(postsDto);
+            // (13) Better work with pagination:
+            // var response = new ApiResponse<PagedList<PostDto>>(postsDto);
+            // (13) Automapper is able to transform PagedList to IEnumerable, then use the same code:
             var response = new ApiResponse<IEnumerable<PostDto>>(postsDto);
+
+            // (13) Return pagination info in the response headers.
+            var metadata = new
+            {
+                posts.TotalCount,
+                posts.PageSize,
+                posts.CurrentPage,
+                posts.TotalPages,
+                posts.HasNextPage,
+                posts.HasPreviousPage
+            };
+            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+            // (13) In the previous line we are working with Json objects.
 
             // Return the dto instead of out domain entity.
             // Ok for returning 200 status.

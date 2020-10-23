@@ -16,3 +16,6 @@ ComponentModel.DataAnnotations: For using decorators inside the dto classes.
 
 Automapper: For mapping dtos into domain entities
 Fluent validation: Validate classes and dto. Provides a simpler and more practical way for class validation and implementation.
+
+## Pending improvements
+	* Return pagination info in the response body instead of using the reponse headers.

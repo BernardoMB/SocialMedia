@@ -18,6 +18,9 @@ namespace SocialMedia.Core.QueryFilters
         // (12) With the ? the parameter will be null if not specified
         // (12) (Ej. unserId will be null, date will be null)
 
+        // (13) Add filters for pagination
+        public int PageSize { get; set; }
+        public int PageNumber { get; set; }
 
     }
 }

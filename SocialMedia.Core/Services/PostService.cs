@@ -1,4 +1,5 @@
-﻿using SocialMedia.Core.Entities;
+﻿using SocialMedia.Core.CustomEntities;
+using SocialMedia.Core.Entities;
 using SocialMedia.Core.Exceptions;
 using SocialMedia.Core.Interfaces;
 using SocialMedia.Core.QueryFilters;
@@ -110,7 +111,9 @@ namespace SocialMedia.Core.Services
 
         //public IEnumerable<Post> GetPosts()
         // (12) Better user query filters:
-        public IEnumerable<Post> GetPosts(PostQueryFilter filters)
+        // public IEnumerable<Post> GetPosts(PostQueryFilter filters)
+        // (13) Better work with out paginated list entity:
+        public PagedList<Post> GetPosts(PostQueryFilter filters)
         {
             //return await _postRepository.GetPosts();
             // (10) Better use the generic class:
@@ -135,7 +138,11 @@ namespace SocialMedia.Core.Services
             {
                 posts = posts.Where(x => x.Description.ToLower().Contains(filters.Description.ToLower()));
             }
-            return posts;
+
+            // (13) Pagination goes after filtering data.
+            var pagedPosts = PagedList<Post>.Create(posts, filters.PageNumber, filters.PageSize);
+
+            return pagedPosts;
         }
 
         public async Task<Post> GetPost(int id)
