@@ -33,6 +33,7 @@ using SocialMedia.Infrastructure.Repositories;
  * (11) Custom Exceptions
  * (12) Filtering Data and Return Types
  * (13) Implementing Pagination
+ * (14) Configuration settings
  */
 
 /**
@@ -77,10 +78,14 @@ namespace SocialMedia.Api
             {
                 // (11) Configure the response when there has been 
                 options.Filters.Add<GlobalExceptionFilter>();
-            }).AddNewtonsoftJson(options =>
+            })
+            // Use NewtonsoftJson to work with Json objects in our application
+            .AddNewtonsoftJson(options =>
             {
                 // Ignore circular reference error.
                 options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+                // (14) Not every ApiResponse instance should include the Meta property, then do the following:
+                options.SerializerSettings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore; // Delete null properties.
             })
             // (7) Configure the behavior of the API
             .ConfigureApiBehaviorOptions(options => {

@@ -142,25 +142,41 @@ namespace SocialMedia.Api.Controllers
             // (13) Automapper is able to transform PagedList to IEnumerable, then use the same code:
             var postsDto = _mapper.Map<IEnumerable<PostDto>>(posts);
 
+            // (13) Return pagination info in the response headers.
+            //var metadata = new // Creating a anonymous object. It is better to work with typed objects.
+            //{
+            //    posts.CurrentPage,
+            //    posts.TotalPages,
+            //    posts.PageSize,
+            //    posts.TotalCount,
+            //    posts.HasNextPage,
+            //    posts.HasPreviousPage
+            //};
+            // (14) Better create a Metadata instance for returning pagination data:
+            var metadata = new Metadata
+            {
+                CurrentPage = posts.CurrentPage,
+                TotalPages = posts.TotalPages,
+                PageSize = posts.PageSize,
+                TotalCount = posts.TotalCount,
+                HasNextPage = posts.HasNextPage,
+                HasPreviousPage = posts.HasPreviousPage
+            };
+            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+            // (13) In the previous line we are working with Json objects.
+
             // (8) Return an object of type ApiResponse for better coding practices.
             // var response = new ApiResponse<IEnumerable<PostDto>>(postsDto);
             // (13) Better work with pagination:
             // var response = new ApiResponse<PagedList<PostDto>>(postsDto);
             // (13) Automapper is able to transform PagedList to IEnumerable, then use the same code:
-            var response = new ApiResponse<IEnumerable<PostDto>>(postsDto);
-
-            // (13) Return pagination info in the response headers.
-            var metadata = new
-            {
-                posts.TotalCount,
-                posts.PageSize,
-                posts.CurrentPage,
-                posts.TotalPages,
-                posts.HasNextPage,
-                posts.HasPreviousPage
+            // var response = new ApiResponse<IEnumerable<PostDto>>(postsDto);
+            // (14) Better return  pagination data in the repsonse body.
+            var response = new ApiResponse<IEnumerable<PostDto>>(postsDto) {
+                Meta = metadata
             };
-            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
-            // (13) In the previous line we are working with Json objects.
+            // (14) We are not specifying metadata in other responses (Ej. get post by id), so there is no point in returning the Meta property in the ApiResponse.
+            // (14) See startup.cs AddNewtonsoftJson call to see how this problem is solved.
 
             // Return the dto instead of out domain entity.
             // Ok for returning 200 status.
