@@ -4,11 +4,14 @@ using SocialMedia.Api.Responses;
 using SocialMedia.Core.DTOs;
 using SocialMedia.Core.Entities;
 using SocialMedia.Core.Interfaces;
+using SocialMedia.Core.QueryFilters;
 using SocialMedia.Core.Services;
 using SocialMedia.Infrastructure.Repositories;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace SocialMedia.Api.Controllers
@@ -68,7 +71,35 @@ namespace SocialMedia.Api.Controllers
 
         // HttpGet decorator for telling the controller that the method GetPosts is the function to be called when invoking the the GET api/controller route
         [HttpGet]
-        public IActionResult GetPosts()
+        // (12) Return an specific type of data
+        // [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(ApiResponse<IEnumerable<PostDto>>))] // (12) Here we will specify which type of response we will return.
+        // (12) Because the method is returning an instance of an object of type ActionResult<ApiResponse<IEnumerable<PostDto>>> it is not necesary to specify the type in the anotation
+        // [ProducesResponseType((int)HttpStatusCode.OK)]
+        // (12) When a method can return other types of response, then we should register that other response type:
+        // [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(ApiResponse<IEnumerable<PostDto>>))]
+        // (12) Because the method is returning an instance of an object of type ActionResult<ApiResponse<IEnumerable<PostDto>>> it is not necesary to specify the type in the anotation
+        // [ProducesResponseType((int)HttpStatusCode.OK)]
+        // public IActionResult GetPosts(
+        // (12) Return Api response type: 
+        // public ApiResponse<IEnumerable<PostDto>> GetPosts( // (12) We will no use this approach becase this aproach will cause the application to always return a 200 status.
+        // (12) Use the following approach to return either Ok(response) or response:
+        // public ActionResult<ApiResponse<IEnumerable<PostDto>>> GetPosts(
+        // (12) The easiest way is to just return IAction result and specify the return type in the annotations:
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(ApiResponse<IEnumerable<PostDto>>))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(ApiResponse<IEnumerable<PostDto>>))]
+        public IActionResult GetPosts(
+            // (12) Specify query string optional parameters:
+            // int? userId, // (12) Filter by user
+            // DateTime? date, // (12) Filter by date
+            // string description // (12) Filter by description
+            // (12) Removing the ? the parameter will take default values if not especified in the request
+            // (12) (Ej. unserId will be 0, date will be 01/01/0001 and description will null)
+            // (12) With the ? the parameter will be null if not specified
+            // (12) (Ej. unserId will be null, date will be null)
+            // (12) Beter use a class for the filters and pagination:
+            [FromQuery] // Wiht this, the method will pick the query filters from the query params instead from the body. It also does the name mappings automatically.
+            PostQueryFilter filters // (12) Complex object as a parameter. Then this method will expect this data in the body of the request.
+        )
         {
             // (7) Because this method is declared in a class that extends from the ControllerBase,
             // we are able to access the ModelState property:
@@ -89,7 +120,9 @@ namespace SocialMedia.Api.Controllers
             // Instead we should use the dependency injection pattern
             //var posts = await _postRepository.GetPosts();
             // (9) Alternatively call the service instead of calling the repository directly
-            var posts = _postService.GetPosts();
+            //var posts = _postService.GetPosts();
+            // (12) Modify the server call to use filters
+            var posts = _postService.GetPosts(filters);
 
             // Map from the posts domain entities to dtos
             //var postsDto = posts.Select(x => new PostDto()
@@ -109,7 +142,17 @@ namespace SocialMedia.Api.Controllers
 
             // Return the dto instead of out domain entity.
             // Ok for returning 200 status.
-            return Ok(response);
+            return Ok(response); // (12) Return an object of type ActionResult this objectc implements the IActionResult abstraction.
+            // (12) We can return something other than Ok(response).
+            // We can return an object of type ApiResponse<>. This has some downsides.
+            // return response; // (12) With this, the API will allways return a 200 status.
+            // The way to handle this issue is to return the success status of the response in the response body. This is not the best approach.
+            // (12) That would not be the best aproach so we will return a the Ok(response).
+            // (12) When the return type of this decorated method is an instance of an object that implements IActionResult we can
+            // return OK(response);
+            // or alternativaly (if return type of method is ActionResult<>)
+            // return response; // <-- this will get serialized as ActionResult<ApiResponse<IEnumerable<PostDto>>.
+            // The best way is to return IActionResult because the code will look clean and easy to write.
         }
 
         [HttpGet("{id}")]
@@ -132,6 +175,7 @@ namespace SocialMedia.Api.Controllers
             //var post = await _postRepository.GetPost(id);
             // (9) Alternatively call the service instead of calling the repository directly
             var post = await _postService.GetPost(id);
+            //var post = _postService.GetPostSync(id);
 
             // Mappings
             //var postDto = new PostDto()

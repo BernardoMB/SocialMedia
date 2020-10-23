@@ -1,6 +1,7 @@
 ﻿using SocialMedia.Core.Entities;
 using SocialMedia.Core.Exceptions;
 using SocialMedia.Core.Interfaces;
+using SocialMedia.Core.QueryFilters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -107,7 +108,9 @@ namespace SocialMedia.Core.Services
             await _unitOfWork.SaveChangesAsync();
         }
 
-        public IEnumerable<Post> GetPosts()
+        //public IEnumerable<Post> GetPosts()
+        // (12) Better user query filters:
+        public IEnumerable<Post> GetPosts(PostQueryFilter filters)
         {
             //return await _postRepository.GetPosts();
             // (10) Better use the generic class:
@@ -115,7 +118,24 @@ namespace SocialMedia.Core.Services
             // (10) Better use unit of work to get access to all repositories in the application
             // return await _unitOfWork.PostRepository.GetAll();
             // (11) Previous line call is no loger async.
-            return _unitOfWork.PostRepository.GetAll();
+            //return _unitOfWork.PostRepository.GetAll();
+
+            // (12) Better implement filtering
+            // (12) Filtering logic
+            var posts = _unitOfWork.PostRepository.GetAll();
+            if (filters.UserId != null)
+            {
+                posts = posts.Where(x => x.UserId == filters.UserId);
+            }
+            if (filters.Date != null)
+            {
+                posts = posts.Where(x => x.Date.Value.ToShortDateString() == filters.Date.Value.ToShortDateString());
+            }
+            if (filters.Description != null)
+            {
+                posts = posts.Where(x => x.Description.ToLower().Contains(filters.Description.ToLower()));
+            }
+            return posts;
         }
 
         public async Task<Post> GetPost(int id)
@@ -125,6 +145,11 @@ namespace SocialMedia.Core.Services
             //return await _postRepository.GetById(id);
             // (10) Better use unit of work to get access to all repositories in the application
             return await _unitOfWork.PostRepository.GetById(id);
+        }
+
+        public Post GetPostSync(int id)
+        {
+            return _unitOfWork.PostRepository.GetByIdSync(id);
         }
 
         public async Task<bool> UpdatePost(Post post)

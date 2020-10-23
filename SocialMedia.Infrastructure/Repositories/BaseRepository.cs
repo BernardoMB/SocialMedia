@@ -43,10 +43,24 @@ namespace SocialMedia.Infrastructure.Repositories
             return _entities.AsEnumerable();
         }
 
+
+
+
+        
         public async Task<T> GetById(int id)
         {
             return await _entities.FindAsync(id);
         }
+
+        public T GetByIdSync(int id)
+        {
+            return _entities.Find(id);
+        }
+
+
+
+
+
 
         public void Update(T entity)
         {

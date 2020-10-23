@@ -17,6 +17,7 @@ namespace SocialMedia.Core.Interfaces
         // (11) Change method firm because of (11) changes.
         IEnumerable<T> GetAll();
         Task<T> GetById(int id);
+        T GetByIdSync(int id);
         // Task Update(T entity); // Commented out because of (11) changes.
         // (11) Change method firm because of (11) changes.
         void Update(T entity);

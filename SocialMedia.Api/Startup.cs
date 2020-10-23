@@ -31,6 +31,8 @@ using SocialMedia.Infrastructure.Repositories;
  * (9) Business Logic and Respository Pattern
  * (10) Generic Repository and Unit of Work
  * (11) Custom Exceptions
+ * (12) Filtering Data and Return Types
+ * (13) Implementing Pagination
  */
 
 /**
@@ -73,6 +75,7 @@ namespace SocialMedia.Api
             // (11) Register exception filters
             options =>
             {
+                // (11) Configure the response when there has been 
                 options.Filters.Add<GlobalExceptionFilter>();
             }).AddNewtonsoftJson(options =>
             {
@@ -94,7 +97,7 @@ namespace SocialMedia.Api
             services.AddDbContext<SocialMediaContext>(options => options.UseSqlServer(Configuration.GetConnectionString("SocialMedia")));
 
             #region Register services
-            // (9) Register which implementation to resolve when injecting the post service.
+            // (9) Register which implementations to resolve when injecting services.
             services.AddTransient<IPostService, PostService>();
             #endregion
 
