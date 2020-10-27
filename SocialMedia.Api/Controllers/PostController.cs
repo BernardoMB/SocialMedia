@@ -5,14 +5,10 @@ using SocialMedia.Api.Responses;
 using SocialMedia.Core.CustomEntities;
 using SocialMedia.Core.DTOs;
 using SocialMedia.Core.Entities;
-using SocialMedia.Core.Interfaces;
 using SocialMedia.Core.QueryFilters;
 using SocialMedia.Core.Services;
-using SocialMedia.Infrastructure.Repositories;
-using System;
-using System.Collections;
+using SocialMedia.Infrastructure.Services;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -44,8 +40,11 @@ namespace SocialMedia.Api.Controllers
         // (9) Alternatively, instead of injecting the repository, we should inject the service.
         private readonly IPostService _postService;
 
-        // Use automapper
+        // Use Automapper
         private readonly IMapper _mapper;
+
+        // (14) Inject the URI service as a dependency.
+        private readonly IUriService _uriService;
 
         /*
          * The following mwthod is the class constructor.
@@ -57,7 +56,9 @@ namespace SocialMedia.Api.Controllers
             // (9) Alternatively, instead of injecting the repository, we should inject the service.
             IPostService postService,
             // Inject the mapper service
-            IMapper mapper
+            IMapper mapper,
+            // (14) Inject the URI service as a dependency
+            IUriService uriService
         ) {
             // The post repository implementation that this controller is going to use is the one passed to this constructor.
             // Si no hacemos esta inyeccion de dependencia, entonces esta clase se esta acoplando a una implementacion en concreto, es mejor hacerlo con inyeccion de dependencias.
@@ -69,10 +70,13 @@ namespace SocialMedia.Api.Controllers
 
             // Inject automapper dependency
             _mapper = mapper;
+
+            // Inject URI service as adependency
+            _uriService = uriService;
         }
 
         // HttpGet decorator for telling the controller that the method GetPosts is the function to be called when invoking the the GET api/controller route
-        [HttpGet]
+        [HttpGet(Name = nameof(GetPost))] // (14) specify the Name of the endpoint.
         // (12) Return an specific type of data
         // [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(ApiResponse<IEnumerable<PostDto>>))] // (12) Here we will specify which type of response we will return.
         // (12) Because the method is returning an instance of an object of type ActionResult<ApiResponse<IEnumerable<PostDto>>> it is not necesary to specify the type in the anotation
@@ -153,6 +157,7 @@ namespace SocialMedia.Api.Controllers
             //    posts.HasPreviousPage
             //};
             // (14) Better create a Metadata instance for returning pagination data:
+            var routeUrl = Url.RouteUrl(nameof(GetPost)); // api/Post in this case
             var metadata = new Metadata
             {
                 CurrentPage = posts.CurrentPage,
@@ -160,7 +165,13 @@ namespace SocialMedia.Api.Controllers
                 PageSize = posts.PageSize,
                 TotalCount = posts.TotalCount,
                 HasNextPage = posts.HasNextPage,
-                HasPreviousPage = posts.HasPreviousPage
+                HasPreviousPage = posts.HasPreviousPage,
+                // NextPageUrl = _uriService.GetPostPaginationUri(filters, "api/Post").ToString(),
+                // PreviousPageUrl = _uriService.GetPostPaginationUri(filters, "api/Post").ToString()
+                // (14) Better do the following
+                NextPageUrl = _uriService.GetPostPaginationUri(filters, routeUrl).ToString(),
+                PreviousPageUrl = _uriService.GetPostPaginationUri(filters, routeUrl).ToString()
+                // (14) We can use the Url.RouteUrl(nameof(GetPost)) syntax because we passed the endpoint name in the method decorator above.
             };
             Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
             // (13) In the previous line we are working with Json objects.

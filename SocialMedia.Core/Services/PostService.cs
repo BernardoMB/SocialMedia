@@ -1,10 +1,10 @@
-﻿using SocialMedia.Core.CustomEntities;
+﻿using Microsoft.Extensions.Options;
+using SocialMedia.Core.CustomEntities;
 using SocialMedia.Core.Entities;
 using SocialMedia.Core.Exceptions;
 using SocialMedia.Core.Interfaces;
 using SocialMedia.Core.QueryFilters;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -31,6 +31,9 @@ namespace SocialMedia.Core.Services
         private readonly IUnitOfWork _unitOfWork;
         // (10) The implementation to use for this abstraction is registered in the Startup.cs file.
 
+        // (14) Use the configuration variables. Use the pagination options defined in appsettings.json
+        private readonly PaginationOptions _paginationOptions;
+
         public PostService(
             // (9) Always use dependency injection in services.
             //IPostRepository postRepository,
@@ -44,14 +47,20 @@ namespace SocialMedia.Core.Services
 
             // (10) Better use unit of work
             // (10) This will save us time. _unitOfWork will be able to call any method inside any repository implementation.
-            IUnitOfWork unitOfWork
+            IUnitOfWork unitOfWork,
             // (10) The implementation to use for this abstraction is registered in the Startup.cs file.
+
+            // (14) Use the configuration variables. Inject the pagination options defined in appsettings.json
+            IOptions<PaginationOptions> options
         )
         {
             //_postRepository = postRepository;
             //_userRepository = userRepository;
             // (10) Better use unit of work
             _unitOfWork = unitOfWork;
+
+            // (14) Use the paginatino options
+            _paginationOptions = options.Value;
              
         }
 
@@ -122,6 +131,10 @@ namespace SocialMedia.Core.Services
             // return await _unitOfWork.PostRepository.GetAll();
             // (11) Previous line call is no loger async.
             //return _unitOfWork.PostRepository.GetAll();
+
+            // (14) Handling empty filters
+            filters.PageNumber = filters.PageNumber == 0 ? _paginationOptions.DefaultPageNumber : filters.PageNumber;
+            filters.PageSize = filters.PageSize == 0 ? _paginationOptions.DefaultPageSize : filters.PageSize;
 
             // (12) Better implement filtering
             // (12) Filtering logic

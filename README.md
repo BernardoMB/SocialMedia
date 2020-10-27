@@ -2,6 +2,11 @@ This project was built using the following tutorial series:
 
 RESTFul API with .NET Core 3.1 by Code Skills
 
+## Configuration
+
+In the `appsettings.json` one can add any configuratino value.
+App pagination default behavior is configured in this `appsettings.json` file.
+
 ## Project Dependencies
 
 Read dependencies description in each project's Nuget Package Manager 
@@ -12,6 +17,10 @@ Newtonsoft: For ignoring circular reference error dealing with database entities
 ComponentModel.DataAnnotations: For using decorators inside the dto classes.
 
 ### SocialMedia.Core
+
+This project shohuld not have many dependencies because of good practices.
+Microsoft.Extensions.Options: For using configuration values in appsettings.json
+
 ### SocialMedia.Infrastructure
 
 Automapper: For mapping dtos into domain entities
