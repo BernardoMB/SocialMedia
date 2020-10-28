@@ -1,8 +1,10 @@
 using System;
 using System.IO;
 using System.Reflection;
+using System.Text;
 using AutoMapper;
 using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -10,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using SocialMedia.Core.CustomEntities;
 using SocialMedia.Core.Interfaces;
@@ -36,6 +39,7 @@ using SocialMedia.Infrastructure.Services;
 * (14) Configuration settings
 * (15) Documenting API with Swagger
 * (16) Securing API with JWT
+* (17) Deploying API in Azure and IIS
 */
 
 /**
@@ -160,6 +164,28 @@ namespace SocialMedia.Api
 				doc.IncludeXmlComments(xmlPath);
 			});
 
+			// (16) Add authentication
+			// (16) This must be added before configuring MVC. Most middlewares must be configured before adding the MVC.
+			services.AddAuthentication(options =>
+			{
+				options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+				options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+			}).AddJwtBearer(options => {
+				// Configure how to validate tokens
+				options.TokenValidationParameters = new TokenValidationParameters
+				{
+					ValidateIssuer = true,
+					ValidateAudience = true,
+					ValidateLifetime = true,
+					ValidateIssuerSigningKey = true,
+					// (16) Specify valid values:
+					ValidIssuer = Configuration["Authentication:Issuer"],
+					ValidAudience = Configuration["Authentication:Audience"],
+					IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Authentication:SecretKey"]))
+					// (16) See controllers to see how endpoints are secured.
+				};
+			});
+
 			// (7) Add MVC compatibility for using global action filters (this application is not an MVC application, it is just an API).
 			// (7) Global actions filters are code that gets executed before and after the code that resides inside every controller.
 			services.AddMvc(options =>
@@ -201,7 +227,11 @@ namespace SocialMedia.Api
 
 			app.UseRouting();
 
-			app.UseAuthorization();
+			// (16) Use authentication
+			// (16) Authentication must come first before the UseAuthorization call.
+			app.UseAuthentication();
+
+			app.UseAuthorization(); // Not being used.
 
 			app.UseEndpoints(endpoints =>
 			{

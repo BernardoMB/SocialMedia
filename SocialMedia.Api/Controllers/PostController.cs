@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using SocialMedia.Api.Responses;
@@ -19,6 +20,8 @@ namespace SocialMedia.Api.Controllers
      * We do not need to change the [controller] segment of this API route path. 
      * It will automatically pick up the first part of the class name, in this case it would be 'post'.
      */
+    // (16) Use the Authorize filter to add authentication for all endpoints in this controller.
+    [Authorize]
     [Produces("application/json")]// (15) Tell the controller class that is uses jsons as the mediatype for the response objects.
     [Route("api/[controller]")]
     /** (7)

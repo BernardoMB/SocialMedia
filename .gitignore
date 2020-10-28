@@ -338,3 +338,6 @@ ASALocalRun/
 
 # BeatPulse healthcheck temp database
 healthchecksdb
+
+# App settings including secret keys
+SocialMedia.Api/appsettings.json

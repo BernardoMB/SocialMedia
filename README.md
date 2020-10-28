@@ -16,6 +16,7 @@ Read dependencies description in each project's Nuget Package Manager
 Newtonsoft: For ignoring circular reference error dealing with database entities.
 ComponentModel.DataAnnotations: For using decorators inside the dto classes.
 Swashbuckle.AspNetCore: For generating Swagger documentation.
+Microsoft.AspNetCore.Authentication.JwtBearer: For authenticating users via JWT.
 
 ### SocialMedia.Core
 
