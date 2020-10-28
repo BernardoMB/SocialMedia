@@ -19,6 +19,7 @@ namespace SocialMedia.Api.Controllers
      * We do not need to change the [controller] segment of this API route path. 
      * It will automatically pick up the first part of the class name, in this case it would be 'post'.
      */
+    [Produces("application/json")]// (15) Tell the controller class that is uses jsons as the mediatype for the response objects.
     [Route("api/[controller]")]
     /** (7)
      * Decorate the class with ApiController decorator for using the following features:
@@ -75,6 +76,12 @@ namespace SocialMedia.Api.Controllers
             _uriService = uriService;
         }
 
+        /// <summary>
+        /// This is an example of xml documentation.
+        /// Retrive all posts.
+        /// </summary>
+        /// <param name="filters">Filters to apply</param>
+        /// <returns></returns>
         // HttpGet decorator for telling the controller that the method GetPosts is the function to be called when invoking the the GET api/controller route
         [HttpGet(Name = nameof(GetPost))] // (14) specify the Name of the endpoint.
         // (12) Return an specific type of data
