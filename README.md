@@ -32,3 +32,15 @@ Fluent validation: Validate classes and dto. Provides a simpler and more practic
 
 Documentation is generated in the following route once the application is running: https://localhost:44310/swagger/v1/swagger.json
 The returned json file can be downloaded and imported in https://editor.swagger.io to generate the documentation.
+
+## IIS Deployment
+
+During the full IIS deployment alternative, one might want to connect to the localdb instance rather than connecting to the Azure SQL Server db instance.
+The application would not be able to connect to the localdb instance, read the following post to solve this issue:
+
+https://docs.microsoft.com/en-us/archive/blogs/sqlexpress/using-localdb-with-full-iis-part-1-user-profile
+
+Afer succesfull deployment one can visit the following site: https://localhost/SMApi/swagger
+
+
+

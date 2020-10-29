@@ -10,6 +10,7 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <!-- Supress no documentation warnings -->
     <NoWarn>$(NoWarn);1591</NoWarn>
+    <UserSecretsId>92cb91d8-e84e-4d0d-84b3-d32937fbecdf</UserSecretsId>
   </PropertyGroup>
   
   <ItemGroup>

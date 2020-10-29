@@ -220,9 +220,9 @@ namespace SocialMedia.Api
 			// (15) Visit https://localhost:44310/swagger to view visual Swagger documentation.
 			app.UseSwaggerUI(options =>
 			{
-				options.SwaggerEndpoint("/swagger/v1/swagger.json", "Social Media API V1");
+				options.SwaggerEndpoint("../swagger/v1/swagger.json", "Social Media API V1");
 				// (15) Start application showing the documentation instead of making a post request to the api/Post endpoint.
-				options.RoutePrefix = string.Empty;
+				// options.RoutePrefix = string.Empty;
 			});
 
 			app.UseRouting();
