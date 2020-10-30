@@ -22,15 +22,22 @@ namespace SocialMedia.Api.Controllers
         private readonly IConfiguration _configuration;
         // (18) Inject the security service so token validation and login validation can be made
         private readonly ISecurityService _securityService;
+        // (19.2) Inject the password service
+        private readonly IPasswordService _passwordService;
+
         public TokenController(
             IConfiguration configuration,
             // (18) Inject the security service so token validation and login validation can be made
-            ISecurityService securityService
+            ISecurityService securityService,
+            // (19.2) Inject the password service
+            IPasswordService passwordService
         )
         {
             _configuration = configuration;
             // (18) Inject the security service so token validation and login validation can be made
-            _securityService = securityService; 
+            _securityService = securityService;
+            // (19.2) Inject the password service
+            _passwordService = passwordService;
         }
 
         [HttpPost]
@@ -60,7 +67,8 @@ namespace SocialMedia.Api.Controllers
             //return true;
             // (18) Modify the method to actually validate a user
             var user = await _securityService.GetLoginByCredentials(login);
-            return (user != null, user);
+            var isValid = _passwordService.Check(user.Password, login.Password);
+            return (isValid, user);
         }
 
         private string GenerateToken(Security security)

@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,6 +20,7 @@ using SocialMedia.Core.Interfaces;
 using SocialMedia.Core.Services;
 using SocialMedia.Infrastructure.Data;
 using SocialMedia.Infrastructure.Filters;
+using SocialMedia.Infrastructure.Options;
 using SocialMedia.Infrastructure.Repositories;
 using SocialMedia.Infrastructure.Services;
 
@@ -42,6 +44,7 @@ using SocialMedia.Infrastructure.Services;
 * (17) Deploying API in Azure and IIS
 * (18) Register and Login User
 * (19.1) Generate Hashing Passwords
+* (19.2) Generate Hashing Passwords
 */
 
 /**
@@ -111,6 +114,11 @@ namespace SocialMedia.Api
 			// (14) We want to have all the pagination configuration mapped onto a class, that class would be PaginationOptions (mapping is automatic).
 			services.Configure<PaginationOptions>(Configuration.GetSection("Pagination"));
 
+			// (19.1) Configure password storing and hashing options
+			// (19.1) Password options are defined in the appsettings.json file.
+			services.Configure<Infrastructure.Options.PasswordOptions>(Configuration.GetSection("PasswordOptions"));
+			//services.Configure<PasswordOptions>(options => Configuration.GetSection("PasswordOptions"));
+
 			// Database configuration
 			services.AddDbContext<SocialMediaContext>(options => options.UseSqlServer(Configuration.GetConnectionString("SocialMedia")));
 
@@ -120,6 +128,8 @@ namespace SocialMedia.Api
 			// (9) The trasient is for injecting services whose instance is created on every request.
 			// (18) Register the security
 			services.AddTransient<ISecurityService, SecurityService>();
+			// (19.2) Register the password service and its implementation
+			services.AddSingleton<IPasswordService, PasswordService>();
 			// (14) Register the URI Service as a singleton service.
 			// (14) Adding a singleton dependency means that the application will only use one instance of the service during it hole lifetime.
 			// (14) We don't need to create an instance of the service every time we get a request.
