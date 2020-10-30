@@ -18,6 +18,11 @@ namespace SocialMedia.Infrastructure.Mappings
             CreateMap<Post, PostDto>();
             // Map from PostDto to Post
             CreateMap<PostDto, Post>();
+
+            
+            // CreateMap<SecurityDto, Security>();
+            // (18) Better do the following to save time. The following also registers the reverse mapping.
+            CreateMap<Security, SecurityDto>().ReverseMap();
         }
     }
 }

@@ -6,6 +6,8 @@ using System.Text;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System;
+using SocialMedia.Core.Interfaces;
+using System.Threading.Tasks;
 
 namespace SocialMedia.Api.Controllers
 {
@@ -18,28 +20,50 @@ namespace SocialMedia.Api.Controllers
     public class TokenController : ControllerBase
     {
         private readonly IConfiguration _configuration;
-        public TokenController(IConfiguration configuration)
+        // (18) Inject the security service so token validation and login validation can be made
+        private readonly ISecurityService _securityService;
+        public TokenController(
+            IConfiguration configuration,
+            // (18) Inject the security service so token validation and login validation can be made
+            ISecurityService securityService
+        )
         {
             _configuration = configuration;
+            // (18) Inject the security service so token validation and login validation can be made
+            _securityService = securityService; 
         }
 
         [HttpPost]
-        public IActionResult Authentication(UserLogin login) 
+        public async Task<IActionResult> Authentication(UserLogin login) 
         {
-            if (IsValidUser(login))
+            //if (IsValidUser(login))
+            //{
+            //    var token = GenerateToken();
+            //    return Ok(new { token });
+            //}
+            //return NotFound();
+
+            // (18) Now we are actually validating the user, then do the following:
+            var validation = await IsValidUser(login);
+            if (validation.Item1)
             {
-                var token = GenerateToken();
+                var token = GenerateToken(validation.Item2);
                 return Ok(new { token });
             }
             return NotFound();
         }
 
-        private bool IsValidUser(UserLogin login)
+        //private async Task<Tuple<bool, Security>> IsValidUser(UserLogin login)
+        // Better return the tuple with thw following syntax
+        private async Task<(bool, Security)> IsValidUser(UserLogin login)
         {
-            return true;
+            //return true;
+            // (18) Modify the method to actually validate a user
+            var user = await _securityService.GetLoginByCredentials(login);
+            return (user != null, user);
         }
 
-        private string GenerateToken()
+        private string GenerateToken(Security security)
         {
             // Header
             var symetricSecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Authentication:SecretKey"]));
@@ -49,9 +73,9 @@ namespace SocialMedia.Api.Controllers
             // Payload
             var claims = new[]
             {
-                new Claim(ClaimTypes.Name, "Jonathan Estrada"),
-                new Claim(ClaimTypes.Email, "jestrada@gmail.com"),
-                new Claim(ClaimTypes.Role, "Admin")
+                new Claim(ClaimTypes.Name, security.UserName),
+                new Claim("User", security.User),
+                new Claim(ClaimTypes.Role, security.Role.ToString())
             };
             var lifeTime = int.Parse(_configuration["Authentication:Lifetime"]);
             var payload = new JwtPayload(

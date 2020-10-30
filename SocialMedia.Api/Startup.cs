@@ -40,6 +40,8 @@ using SocialMedia.Infrastructure.Services;
 * (15) Documenting API with Swagger
 * (16) Securing API with JWT
 * (17) Deploying API in Azure and IIS
+* (18) Register and Login User
+* (19.1) Generate Hashing Passwords
 */
 
 /**
@@ -116,6 +118,8 @@ namespace SocialMedia.Api
 			// (9) Register which implementations to resolve when injecting services.
 			services.AddTransient<IPostService, PostService>();
 			// (9) The trasient is for injecting services whose instance is created on every request.
+			// (18) Register the security
+			services.AddTransient<ISecurityService, SecurityService>();
 			// (14) Register the URI Service as a singleton service.
 			// (14) Adding a singleton dependency means that the application will only use one instance of the service during it hole lifetime.
 			// (14) We don't need to create an instance of the service every time we get a request.
