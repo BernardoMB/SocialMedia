@@ -23,6 +23,7 @@
     "Local IIS": {
       "commandName": "IIS",
       "launchBrowser": true,
+      "launchUrl": "https://localhost/SMApi/swagger",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
