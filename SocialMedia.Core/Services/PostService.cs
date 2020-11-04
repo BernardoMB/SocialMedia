@@ -174,13 +174,19 @@ namespace SocialMedia.Core.Services
 
         public async Task<bool> UpdatePost(Post post)
         {
+            // (20) Improve logic business regarding updating post
+            var existingPost = await _unitOfWork.PostRepository.GetById(post.Id);
+            existingPost.Image = post.Image;
+            existingPost.Description = post.Description;
+            // We added the previous 3 lines because the userId and the date created cannot be modified
+
             //return await _postRepository.UpdatePost(post);
             // (10) Better use the generic class:
             //return await _postRepository.Update(post);
             // (10) Better use unit of work to get access to all repositories in the application
             // await _unitOfWork.PostRepository.Update(post);
             // (11) Previous line call is no loger async.
-            _unitOfWork.PostRepository.Update(post);
+            _unitOfWork.PostRepository.Update(existingPost);
             await _unitOfWork.SaveChangesAsync();
             return true;
         }
@@ -192,6 +198,7 @@ namespace SocialMedia.Core.Services
             //return await _postRepository.Delete(id);
             // (10) Better use unit of work to get access to all repositories in the application
             await _unitOfWork.PostRepository.Delete(id);
+            await _unitOfWork.SaveChangesAsync();
             return true;
         }
     }

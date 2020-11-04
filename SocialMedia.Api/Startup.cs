@@ -23,6 +23,7 @@ using SocialMedia.Infrastructure.Filters;
 using SocialMedia.Infrastructure.Options;
 using SocialMedia.Infrastructure.Repositories;
 using SocialMedia.Infrastructure.Services;
+using SocialMedia.Infrastructure.Extensios;
 
 /**
 * (1) Summary
@@ -45,6 +46,7 @@ using SocialMedia.Infrastructure.Services;
 * (18) Register and Login User
 * (19.1) Generate Hashing Passwords
 * (19.2) Generate Hashing Passwords
+* (20) Improving the code
 */
 
 /**
@@ -112,43 +114,56 @@ namespace SocialMedia.Api
 
 			// (14) Configure using configuration values using the appsettings.json file.
 			// (14) We want to have all the pagination configuration mapped onto a class, that class would be PaginationOptions (mapping is automatic).
-			services.Configure<PaginationOptions>(Configuration.GetSection("Pagination"));
-
+			// services.Configure<PaginationOptions>(Configuration.GetSection("Pagination"));
+			// Better call the extension method to configure all application options.
+			// services.AddOptions(Configuration);
 			// (19.1) Configure password storing and hashing options
 			// (19.1) Password options are defined in the appsettings.json file.
-			services.Configure<Infrastructure.Options.PasswordOptions>(Configuration.GetSection("PasswordOptions"));
+			// services.Configure<Infrastructure.Options.PasswordOptions>(Configuration.GetSection("PasswordOptions"));
+			// The line above is commented aout
 			//services.Configure<PasswordOptions>(options => Configuration.GetSection("PasswordOptions"));
-
 			// Database configuration
-			services.AddDbContext<SocialMediaContext>(options => options.UseSqlServer(Configuration.GetConnectionString("SocialMedia")));
+			// services.AddDbContext<SocialMediaContext>(options => options.UseSqlServer(Configuration.GetConnectionString("SocialMedia")));
+			// (20) Better call the extension method for configuring the database:
+			// services.AddDbContext(Configuration); // No need to pass service because the implemented method is an extension method
+
+			// (20) Alternatively on can configure application options and database using chaning calls from extension methods.
+			// services.AddOptions(Configuration).AddDbContext(Configuration);
+			// (20) It is more clean to do the following
+			services.AddOptions(Configuration);
+			services.AddDbContext(Configuration);
 
 			#region Register services
 			// (9) Register which implementations to resolve when injecting services.
-			services.AddTransient<IPostService, PostService>();
+			// services.AddTransient<IPostService, PostService>();
+			// (20) Better use the extension method AddServices
 			// (9) The trasient is for injecting services whose instance is created on every request.
 			// (18) Register the security
-			services.AddTransient<ISecurityService, SecurityService>();
+			// services.AddTransient<ISecurityService, SecurityService>();
+			// (20) Better use the extension method AddServices
 			// (19.2) Register the password service and its implementation
-			services.AddSingleton<IPasswordService, PasswordService>();
+			// services.AddSingleton<IPasswordService, PasswordService>();
+			// (20) Better use the extension method AddServices
 			// (14) Register the URI Service as a singleton service.
 			// (14) Adding a singleton dependency means that the application will only use one instance of the service during it hole lifetime.
 			// (14) We don't need to create an instance of the service every time we get a request.
 			// services.AddSingleton<IUriService, UriService>();
 			// (14) The UriService has one parameter of type string in it constructor. When injecting this singleton service we must provide
 			// the appropiate parameters into the constructor. Therefore, better do the following:
-			services.AddSingleton<IUriService>(provider =>
-			{
-				// (14) Get access to the Http context of this application.
-				var accesor = provider.GetRequiredService<IHttpContextAccessor>();
-				// (14) The HttpContextAccessor allow us to access the http context of the application.
-				var request = accesor.HttpContext.Request; // Get access to the request object.
-				var requestScheme = request.Scheme; // Http or Https.
-				var host = request.Host.ToUriComponent(); // Host of the application (Ej. 127.0.0.1:44310 when running locally).
-				var absoluteUri = string.Concat(requestScheme, "://", host);
-				Console.WriteLine("Absolute URI:" + absoluteUri);
-				// (14) Because we are injecting a sinlgeton service, we must return an instance of the implementation.
-				return new UriService(absoluteUri);
-			});
+			// services.AddSingleton<IUriService>(provider =>
+			// {
+			// 	// (14) Get access to the Http context of this application.
+			// 	var accesor = provider.GetRequiredService<IHttpContextAccessor>();
+			// 	// (14) The HttpContextAccessor allow us to access the http context of the application.
+			// 	var request = accesor.HttpContext.Request; // Get access to the request object.
+			// 	var requestScheme = request.Scheme; // Http or Https.
+			// 	var host = request.Host.ToUriComponent(); // Host of the application (Ej. 127.0.0.1:44310 when running locally).
+			// 	var absoluteUri = string.Concat(requestScheme, "://", host);
+			// 	Console.WriteLine("Absolute URI:" + absoluteUri);
+			// 	// (14) Because we are injecting a sinlgeton service, we must return an instance of the implementation.
+			// 	return new UriService(absoluteUri);
+			// });
+			// (20) Better use the extension method AddServices
 			#endregion
 
 			#region Register repositories
@@ -160,49 +175,56 @@ namespace SocialMedia.Api
 			// (10) Better uase the generic class:
 			// (10) Register the base repository so it can be injectable in other services.
 			// (10) Add using scope. this will especify how many time the injectable object will be alive.
-			services.AddScoped(typeof(IRepository<>), typeof(BaseRepository<>));
+			// services.AddScoped(typeof(IRepository<>), typeof(BaseRepository<>));
+			// (20) Better use the extension method AddServices
 			// (10) Register the unit of work
-			services.AddTransient<IUnitOfWork, UnitOfWork>();
+			// services.AddTransient<IUnitOfWork, UnitOfWork>();
+			// (20) Better use the extension method AddServices
 			#endregion
 
+			services.AddServices();
+
 			// (15) Configure Swashbuckle.AspNetCore package for generating Swagger documentation.
-			services.AddSwaggerGen(doc =>
-			{
-				// (15) Generate API Documentation:
-				doc.SwaggerDoc("v1", new OpenApiInfo { Title = "Social Media API", Version = "v1" });
-				// (15) Configura Swagger documentation to include xml comments (comments above methods) for documentation.
-				// (15) The line below uses the Reflection API (using System.Reflection;).
-				var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-				var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-				Console.WriteLine($"Xml comments file path: {xmlPath}");
-				doc.IncludeXmlComments(xmlPath);
-			});
+			// services.AddSwaggerGen(doc =>
+			// {
+			// 	// (15) Generate API Documentation:
+			//	doc.SwaggerDoc("v1", new OpenApiInfo { Title = "Social Media API", Version = "v1" });
+			// 	// (15) Configura Swagger documentation to include xml comments (comments above methods) for documentation.
+			// 	// (15) The line below uses the Reflection API (using System.Reflection;).
+			// 	var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+			// 	var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+			// 	Console.WriteLine($"Xml comments file path: {xmlPath}");
+			// 	doc.IncludeXmlComments(xmlPath);
+			// });
+			// (20) Better use the extension method AddSwagger
+			services.AddSwagger($"{Assembly.GetExecutingAssembly().GetName().Name}.xml");
 
 			// (16) Add authentication
 			// (16) This must be added before configuring MVC. Most middlewares must be configured before adding the MVC.
 			services.AddAuthentication(options =>
-			{
-				options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-				options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-			}).AddJwtBearer(options => {
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(options =>
+            {
 				// Configure how to validate tokens
 				options.TokenValidationParameters = new TokenValidationParameters
-				{
-					ValidateIssuer = true,
-					ValidateAudience = true,
-					ValidateLifetime = true,
-					ValidateIssuerSigningKey = true,
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
 					// (16) Specify valid values:
 					ValidIssuer = Configuration["Authentication:Issuer"],
-					ValidAudience = Configuration["Authentication:Audience"],
-					IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Authentication:SecretKey"]))
+                    ValidAudience = Configuration["Authentication:Audience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Authentication:SecretKey"]))
 					// (16) See controllers to see how endpoints are secured.
 				};
-			});
+            });
 
-			// (7) Add MVC compatibility for using global action filters (this application is not an MVC application, it is just an API).
-			// (7) Global actions filters are code that gets executed before and after the code that resides inside every controller.
-			services.AddMvc(options =>
+            // (7) Add MVC compatibility for using global action filters (this application is not an MVC application, it is just an API).
+            // (7) Global actions filters are code that gets executed before and after the code that resides inside every controller.
+            services.AddMvc(options =>
 			{
 				// (7) Register the validation filter.
 				// (7) This will register our ValidationFilter.cs class.
