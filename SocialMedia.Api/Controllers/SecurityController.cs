@@ -30,11 +30,6 @@ namespace SocialMedia.Api.Controllers
             _passwordService = passwordService;
         }
 
-        /// <summary>
-        /// Signup route
-        /// </summary>
-        /// <param name="securityDto"></param>
-        /// <returns></returns>
         [HttpPost]
         public async Task<IActionResult> Post(SecurityDto securityDto)
         {

@@ -18,32 +18,15 @@ using System.Text;
 
 namespace SocialMedia.Infrastructure.Extensios
 {
-    /*
-    * Static class because no instanciation is needed 
-    */ 
     public static class ServiceCollectionExtension
     {
-        /// <summary>
-        /// Extension method. Adds the db context.
-        /// The keyword this will refer to the scope of the function calling this extension method.
-        /// If there is a function calling this method, the keyword this will provide the variables inside the scope of the function.
-        /// </summary>
-        /// <param name="services"></param>
-        /// <param name="configuration"></param>
-        /// <returns>The same service collection instance to make call chains available</returns>
         public static IServiceCollection AddDbContext(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddDbContext<SocialMediaContext>(options =>
                 options.UseSqlServer(configuration.GetConnectionString("SocialMedia")));
             return services;
         }
-
-        /// <summary>
-        /// Add options
-        /// </summary>
-        /// <param name="services"></param>
-        /// <param name="configuration"></param>
-        /// <returns>The same service collection instance to make call chains available</returns>
+        
         public static IServiceCollection AddOptions(this IServiceCollection services, IConfiguration configuration)
         {
             // services.Configure<PaginationOptions>(configuration.GetSection("Pagination"));
@@ -55,12 +38,7 @@ namespace SocialMedia.Infrastructure.Extensios
             services.Configure<PasswordOptions>(options => configuration.GetSection("PasswordOptions").Bind(options));
             return services;
         }
-
-        /// <summary>
-        /// Register services implemented using dependency injection, including repositories and utility services.
-        /// </summary>
-        /// <param name="services"></param>
-        /// <returns></returns>
+        
         public static IServiceCollection AddServices(this IServiceCollection services)
         {
             services.AddTransient<IPostService, PostService>();
@@ -84,7 +62,7 @@ namespace SocialMedia.Infrastructure.Extensios
             services.AddTransient<IUnitOfWork, UnitOfWork>();
             return services;
         }
-
+        
         public static IServiceCollection AddSwagger(this IServiceCollection services, string xmlFileName)
         {
             services.AddSwaggerGen(doc =>
