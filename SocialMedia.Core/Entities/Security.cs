@@ -2,9 +2,6 @@
 
 namespace SocialMedia.Core.Entities
 {
-    /*
-    * (18) Class for handling security
-    */
     public class Security : BaseEntity
     {
         public string User { get; set; }

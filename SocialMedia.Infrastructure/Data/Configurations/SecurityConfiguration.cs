@@ -1,8 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SocialMedia.Core.Entities;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using SocialMedia.Core.Enumerations;
 
@@ -12,14 +10,10 @@ namespace SocialMedia.Infrastructure.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<Security> builder)
         {
-            // Table name
             builder.ToTable("Seguridad");
-            
-            // Primary key
+
             builder.HasKey(e => e.Id);
             
-            // Properties
-
             builder.Property(e => e.Id)
                 .HasColumnName("IdSeguridad");
 
@@ -38,14 +32,13 @@ namespace SocialMedia.Infrastructure.Data.Configurations
             builder.Property(e => e.Password)
                 .HasColumnName("Contrasena")
                 .IsRequired()
-                .HasMaxLength(200) // 200 because we will be storing hashes
+                .HasMaxLength(200)
                 .IsUnicode(false);
 
             builder.Property(e => e.Role)
                 .HasColumnName("Rol")
                 .IsRequired()
                 .HasMaxLength(15)
-                // Using enumerators
                 .HasConversion(
                     x => x.ToString(),
                     x => (RoleType)Enum.Parse(typeof(RoleType), x)

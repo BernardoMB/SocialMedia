@@ -1,9 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using SocialMedia.Core.Entities;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SocialMedia.Infrastructure.Data.Configurations
 {
@@ -11,15 +8,10 @@ namespace SocialMedia.Infrastructure.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<Post> builder)
         {
-            // Dealing with different table names problem:
-            builder.ToTable("Publicacion"); // This is how this builder is named on the actual db.
-
-            // KEYS
-
+            builder.ToTable("Publicacion");
+            
             builder.HasKey(e => e.Id);
-
-            // PROPERTIES
-
+            
             builder.Property(e => e.Id)
                 .HasColumnName("IdPublicacion");
 
@@ -40,8 +32,6 @@ namespace SocialMedia.Infrastructure.Data.Configurations
                 .HasColumnName("Imagen")
                 .HasMaxLength(500)
                 .IsUnicode(false);
-
-            // RELATIONS
 
             builder.HasOne(d => d.User)
                 .WithMany(p => p.Posts)

@@ -1,8 +1,5 @@
 ﻿namespace SocialMedia.Core.CustomEntities
 {
-    /* (14) Pagination metadata returned to the client after every request
-     * for a paginatio nendpoint.
-     */
     public class Metadata
     {
         public int CurrentPage { get; set; }

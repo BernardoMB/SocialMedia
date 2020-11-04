@@ -2,13 +2,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace SocialMedia.Core.CustomEntities
 {
-    /* (13) Generic class for returning a paged list.
-     * Returning type of a pagination endpoint.
-     */
     public class PagedList<T> : List<T> where T : BaseEntity
     {
         public int CurrentPage { get; set; }
@@ -27,9 +23,7 @@ namespace SocialMedia.Core.CustomEntities
             TotalCount = count;
             PageSize = pageSize;
             CurrentPage = pageNumber;
-            TotalPages = (int)Math.Ceiling(count / (double)pageSize); // Ceiling in case there are 8.2 pages that means there are 9 pages.
-
-            // (13) Add items to the list this class is inheriting functionality.
+            TotalPages = (int)Math.Ceiling(count / (double)pageSize);
             AddRange(items);
         }
 

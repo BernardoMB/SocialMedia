@@ -1,9 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using SocialMedia.Core.Entities;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SocialMedia.Infrastructure.Data.Configurations
 {
@@ -11,45 +8,33 @@ namespace SocialMedia.Infrastructure.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<Comment> builder)
         {
-            /*
-                * The code that we see inside here is what is known as the fluent API
-                * This is what we use for configuring our entities
-                */
-
-            // Dealing with different table names problem:
-            builder.ToTable("Comentario"); // This is how this builder is named on the actual db.
-
-            // KEYS
+            builder.ToTable("Comentario");
 
             builder.HasKey(e => e.Id);
 
-            // PROPERTIES
-
             builder.Property(e => e.Id)
-                .HasColumnName("IdComentario") // Properties are also mapped with different names
+                .HasColumnName("IdComentario")
                 .ValueGeneratedNever();
 
             builder.Property(e => e.PostId)
-                .HasColumnName("IdPublicacion"); // Properties are also mapped with different names
+                .HasColumnName("IdPublicacion");
 
             builder.Property(e => e.UserId)
-                .HasColumnName("IdUsuario"); // Properties are also mapped with different names
+                .HasColumnName("IdUsuario");
 
             builder.Property(e => e.IsActive)
-                .HasColumnName("Activo"); // Properties are also mapped with different names
+                .HasColumnName("Activo");
 
             builder.Property(e => e.Description)
-                .HasColumnName("Descripcion") // Properties are also mapped with different names
+                .HasColumnName("Descripcion")
                 .IsRequired()
                 .HasMaxLength(500)
                 .IsUnicode(false);
 
             builder.Property(e => e.Date)
-                .HasColumnName("Fecha") // Properties are also mapped with different names
+                .HasColumnName("Fecha")
                 .HasColumnType("datetime");
-
-            // RELATIONS
-
+            
             builder.HasOne(d => d.Post)
                 .WithMany(p => p.Comments)
                 .HasForeignKey(d => d.PostId)

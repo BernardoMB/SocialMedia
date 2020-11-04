@@ -16,17 +16,17 @@ namespace SocialMedia.Api.Controllers
     [ApiController]
     public class SecurityController : ControllerBase
     {
-        private readonly ISecurityService _securityService;
         private readonly IMapper _mappper;
+        private readonly ISecurityService _securityService;
         private readonly IPasswordService _passwordService;
 
         public SecurityController(
-            ISecurityService securityService,
             IMapper mapper,
+            ISecurityService securityService,
             IPasswordService passwordService
         ) {
-            _securityService = securityService;
             _mappper = mapper;
+            _securityService = securityService;
             _passwordService = passwordService;
         }
 

@@ -1,9 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using SocialMedia.Core.Entities;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SocialMedia.Infrastructure.Data.Configurations
 {
@@ -11,14 +8,10 @@ namespace SocialMedia.Infrastructure.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<User> builder)
         {
-            builder.ToTable("Usuario"); // This is how this builder is named on the actual db.
-
-            // KEYS
-
+            builder.ToTable("Usuario");
+            
             builder.HasKey(e => e.Id);
-
-            // PROPERTIES
-
+            
             builder.Property(e => e.Id)
                 .HasColumnName("IdUsuario");
 
