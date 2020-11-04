@@ -18,9 +18,10 @@ using System.Text;
 
 namespace SocialMedia.Infrastructure.Extensios
 {
-    /*
-    * Static class because no instanciation is needed 
-    */ 
+    /// <summary>
+    /// Static class because no instanciation is needed.
+    /// This class holds extension methods for configuring services.
+    /// </summary>
     public static class ServiceCollectionExtension
     {
         /// <summary>
@@ -85,6 +86,14 @@ namespace SocialMedia.Infrastructure.Extensios
             return services;
         }
 
+        /// <summary>
+        /// Configure swagger documentation.
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="xmlFileName">
+        /// The name of the file where the xml documentation is placed.
+        /// </param>
+        /// <returns></returns>
         public static IServiceCollection AddSwagger(this IServiceCollection services, string xmlFileName)
         {
             services.AddSwaggerGen(doc =>
