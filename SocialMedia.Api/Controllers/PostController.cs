@@ -86,7 +86,7 @@ namespace SocialMedia.Api.Controllers
         /// <param name="filters">Filters to apply</param>
         /// <returns></returns>
         // HttpGet decorator for telling the controller that the method GetPosts is the function to be called when invoking the the GET api/controller route
-        [HttpGet(Name = nameof(GetPost))] // (14) specify the Name of the endpoint.
+        [HttpGet(Name = nameof(GetPosts))] // (14) specify the Name of the endpoint.
         // (12) Return an specific type of data
         // [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(ApiResponse<IEnumerable<PostDto>>))] // (12) Here we will specify which type of response we will return.
         // (12) Because the method is returning an instance of an object of type ActionResult<ApiResponse<IEnumerable<PostDto>>> it is not necesary to specify the type in the anotation
@@ -167,7 +167,7 @@ namespace SocialMedia.Api.Controllers
             //    posts.HasPreviousPage
             //};
             // (14) Better create a Metadata instance for returning pagination data:
-            var routeUrl = Url.RouteUrl(nameof(GetPost)); // api/Post in this case
+            var routeUrl = Url.RouteUrl(nameof(GetPosts)); // api/Post in this case
             var metadata = new Metadata
             {
                 CurrentPage = posts.CurrentPage,
