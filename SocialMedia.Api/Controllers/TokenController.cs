@@ -40,8 +40,13 @@ namespace SocialMedia.Api.Controllers
             _passwordService = passwordService;
         }
 
+        /// <summary>
+        /// Login route
+        /// </summary>
+        /// <param name="login"></param>
+        /// <returns></returns>
         [HttpPost]
-        public async Task<IActionResult> Authentication(UserLogin login) 
+        public async Task<IActionResult> Authentication(UserCredentials login) 
         {
             //if (IsValidUser(login))
             //{
@@ -62,12 +67,12 @@ namespace SocialMedia.Api.Controllers
 
         //private async Task<Tuple<bool, Security>> IsValidUser(UserLogin login)
         // Better return the tuple with thw following syntax
-        private async Task<(bool, Security)> IsValidUser(UserLogin login)
+        private async Task<(bool, Security)> IsValidUser(UserCredentials credentials)
         {
             //return true;
             // (18) Modify the method to actually validate a user
-            var user = await _securityService.GetLoginByCredentials(login);
-            var isValid = _passwordService.Check(user.Password, login.Password);
+            var user = await _securityService.GetSecurityByUsername(credentials.Username);
+            var isValid = _passwordService.Check(user.Password, credentials.Password);
             return (isValid, user);
         }
 

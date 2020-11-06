@@ -49,16 +49,23 @@ using SocialMedia.Infrastructure.Extensios;
 * (20) Improving the code
 */
 
-/**
-* This class is the most important class of the project.
-* Here we will register all tecnologies or services that we will be using in this project:
-* * Database connection
-* * Authentication
-* * Dependency injection
-* * Etc
-*/
 namespace SocialMedia.Api
 {
+	/// <summary>
+	/// This class is the most important class of the project.
+	/// Here we will register all tecnologies or services that we will be using in this project:
+	/// * Mappings
+	/// * Controllers
+	/// * Global exception filters
+	/// * Configure API behavior
+	/// * Configure pagination and password options
+	/// * Configure database connection
+	/// * Register services and repositories
+	/// * Configure Swagger documentation
+	/// * Configure authentication scheme and how token is validated
+	/// * Configure global validation filters
+	/// * Configure Fluent validation
+	/// </summary>
 	public class Startup
 	{
 		public Startup(IConfiguration configuration)
@@ -79,10 +86,9 @@ namespace SocialMedia.Api
 		public void ConfigureServices(IServiceCollection services)
 		{
 			// Configure the automapper middleware and register all mappings.
-			// Mappings profiles will be automatically detected thanks to the following sintax.
-			// Any additional mapping will be automatically detected and registered.
-			// Pass the assembliens so the AddAutoMapper function can search and register all existing mapping profiles.
-			services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+			// Mappings profiles will be automatically detected and registered thanks to the following sintax.
+			// services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+			services.AddMappings();
 
 			// Configure NewtonSoftJson package.
 			services.AddControllers(

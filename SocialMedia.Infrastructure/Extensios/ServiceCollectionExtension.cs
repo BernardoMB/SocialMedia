@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,10 +21,22 @@ namespace SocialMedia.Infrastructure.Extensios
 {
     /// <summary>
     /// Static class because no instanciation is needed.
-    /// This class holds extension methods for configuring services.
+    /// This class holds extension methods for configuring the application on startup.
     /// </summary>
     public static class ServiceCollectionExtension
     {
+        /// <summary>
+        /// Configure the automapper middleware and register all mappings.
+        /// Mappings profiles will be automatically detected and registered thanks to the following sintax.
+        /// </summary>
+        /// <param name="services"></param>
+        /// <returns></returns>
+        public static IServiceCollection AddMappings(this IServiceCollection services)
+        {
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+            return services;
+        }
+
         /// <summary>
         /// Extension method. Adds the db context.
         /// The keyword this will refer to the scope of the function calling this extension method.
@@ -81,7 +94,7 @@ namespace SocialMedia.Infrastructure.Extensios
                 return new UriService(absoluteUri);
             });
             // (20) Repositories can be added here or on its own extension method.]
-            services.AddScoped(typeof(IRepository<>), typeof(BaseRepository<>));
+            services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
             services.AddTransient<IUnitOfWork, UnitOfWork>();
             return services;
         }

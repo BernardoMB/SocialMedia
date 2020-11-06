@@ -14,7 +14,7 @@ namespace SocialMedia.Infrastructure.Repositories
      * This class is a genercic class and it is an implementation of the IRepository abstraction.
      * One can use this generic class or other implementation. 
      */
-    public class BaseRepository<T> : IRepository<T> where T : BaseEntity
+    public class BaseRepository<T> : IBaseRepository<T> where T : BaseEntity
     {
         // (10) Her the keyword where T : BaseEntity is setting a restriction:
         // (10) Only classes that extend from BaseEntity can be used to instanciate an object of type BaseRepository.

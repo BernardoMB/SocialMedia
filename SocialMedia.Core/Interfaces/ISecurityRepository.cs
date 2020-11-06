@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace SocialMedia.Core.Interfaces
 {
-    public interface ISecurityRepository : IRepository<Security>
+    public interface ISecurityRepository : IBaseRepository<Security>
     {
-        Task<Security> GetLoginByCredentials(UserLogin login);
+        Task<Security> GetSecurityByUsername(string username);
     }
 }

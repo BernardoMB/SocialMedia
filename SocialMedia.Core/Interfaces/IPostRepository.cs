@@ -9,7 +9,7 @@ namespace SocialMedia.Core.Interfaces
 {
     // In this interface we will define the methods that any class implementing this interface should implement
     // This interface is the abstraction of the actual repository
-    public interface IPostRepository : IRepository<Post>
+    public interface IPostRepository : IBaseRepository<Post>
     {
         Task<IEnumerable<Post>> GetPostsByUser(int userId);
 
